@@ -12,6 +12,7 @@ if len(sys.argv) == 2:
     artist = sys.argv[2]
 else:
     print "artist2pylist usage:\npython main.py <Spotify username> <Artist>"
+    sys.exit()
 
 # get desired artist from user via terminal; testing with generic artist
 # artist = 'Radiohead';
