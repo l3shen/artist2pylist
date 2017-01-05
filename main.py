@@ -19,9 +19,6 @@ else:
 # get desired artist from user via terminal; testing with generic artist
 # artist = 'Radiohead';
 
-# sanity check
-print (username + artist)
-
 # create playlist
 userToken = spotutil.prompt_for_user_token(username)
 
