@@ -91,4 +91,4 @@ if token:
 else:
     print("Can't get token for", username)
 
-# IT'S SHIT BUT IT FUCKING WORKS AYYYYYY
+# IT'S SHIT BUT IT FUCKING WORKS AYYYYYYyy
