@@ -8,7 +8,6 @@ import spotipy.util as util
 import requests
 import sys
 import pprint
-from collections import defaultdict
 
 # API environmental variables
 SPOTIPY_CLIENT_ID='d3d2847c053c4f02bac26015bcff8ebd'
@@ -33,12 +32,13 @@ if ('not found' in soup.get_text()):
 
 # convert most recent setlist to an array w/ track names
 recentSetlist = [i.get('name') for i in soup.find('setlist').find_all('song')]
+playlist_name = soup.find('setlist').get('eventdate')
+
+#TODO add break for artists that exist but have no setlist
 
 # this took goddamn forever to work, stupid callback URL
 username = 'kamdev'
-playlist_id = '35vTgBktjPHNLbNCUkyMCA'
-track_id = '7eKd41R7nInfUmh3iv7JjL'
-scope = 'user-library-read'
+scope = 'user-library-read playlist-modify-public'
 name = 'Phish'
 
 # generate user token
@@ -61,7 +61,34 @@ if token:
 else:
     print 'Could not authenticate. Try again, ' + username
 
-for values in tracklist:
-    print values
-
 # fuuuuuuck me it's a dict with a list with a dict with a list
+
+# part two:
+# create playlist, find playlist id, and then add files to it
+
+# works!!!!!!!
+if token:
+    sp = spotipy.Spotify(auth=token)
+    sp.trace = False
+    playlists = sp.user_playlist_create(username, playlist_name)
+    print 'Playlist created: ' + name + ' ' + playlist_name
+else:
+    print 'Could not authenticate. Try again, ' + username
+
+# find playlist ID
+# find users most recent playlist
+authTag = 'Bearer ' + token
+req2 = requests.get('https://api.spotify.com/v1/users/' + username + '/playlists?limit=1', headers={'Authorization':authTag}).json()
+
+# parse JSON object for playlist id
+playlist_id = req2['items'][0]['id']
+
+# add to playlist
+if token:
+    sp = spotipy.Spotify(auth=token)
+    sp.trace = False
+    results = sp.user_playlist_add_tracks(username, playlist_id, tracklist)
+else:
+    print("Can't get token for", username)
+
+# IT'S SHIT BUT IT FUCKING WORKS AYYYYYY
