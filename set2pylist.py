@@ -9,7 +9,15 @@ import requests
 import sys
 import pprint
 
-# API environmental variables
+if len(sys.argv) == 3:
+    username = sys.argv[1]
+    name = sys.argv[2]
+else:
+    print('Usage: python set2pylist.py <Spotify username> <artist>')
+    sys.exit()
+
+
+# API environmental variables - store in a class later
 SPOTIPY_CLIENT_ID='d3d2847c053c4f02bac26015bcff8ebd'
 SPOTIPY_CLIENT_SECRET='0795f1b2f3934d599ea2d6c5ecf5d066'
 
@@ -19,7 +27,7 @@ SPOTIPY_CLIENT_SECRET='0795f1b2f3934d599ea2d6c5ecf5d066'
 # this part of the code scrapes the relevant data and saves it in an array of song titles
 
 # first thing is to download setlist data
-url = 'http://api.setlist.fm/rest/0.1/search/setlists?artistName=phish'
+url = 'http://api.setlist.fm/rest/0.1/search/setlists?artistName=' + name
 r = requests.get(url)
 
 # create BeautifulSoup object
@@ -33,13 +41,14 @@ if ('not found' in soup.get_text()):
 # convert most recent setlist to an array w/ track names
 recentSetlist = [i.get('name') for i in soup.find('setlist').find_all('song')]
 playlist_name = soup.find('setlist').get('eventdate')
+playlist_name += ' ' + name
 
 #TODO add break for artists that exist but have no setlist
 
 # this took goddamn forever to work, stupid callback URL
-username = 'kamdev'
+# username = 'kamdev'
 scope = 'user-library-read playlist-modify-public'
-name = 'Phish'
+# name = 'Phish'
 
 # generate user token
 token = util.prompt_for_user_token(username, scope, client_id=SPOTIPY_CLIENT_ID, client_secret=SPOTIPY_CLIENT_SECRET, redirect_uri='http://localhost:8888/callback')
