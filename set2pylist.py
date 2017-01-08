@@ -9,13 +9,13 @@ import requests
 import sys
 import pprint
 
+# maybe concatonate any entry index 2 and up to artist name?
 if len(sys.argv) == 3:
     username = sys.argv[1]
     name = sys.argv[2]
 else:
-    print('Usage: python set2pylist.py <Spotify username> <artist>')
+    print('Usage: python set2pylist.py <Spotify username> <artist in single quotes>')
     sys.exit()
-
 
 # API environmental variables - store in a class later
 SPOTIPY_CLIENT_ID='d3d2847c053c4f02bac26015bcff8ebd'
@@ -69,6 +69,11 @@ if token:
             print 'Added successfully.'
 else:
     print 'Could not authenticate. Try again, ' + username
+
+# quit if no songs found
+if len(tracklist) == 0:
+    print ('No tracks found on Spotify, please try a differnet artist.')
+    sys.exit()
 
 # fuuuuuuck me it's a dict with a list with a dict with a list
 
