@@ -10,12 +10,16 @@ import sys
 import pprint
 
 # maybe concatonate any entry index 2 and up to artist name?
-if len(sys.argv) == 3:
+if len(sys.argv) >= 3:
     username = sys.argv[1]
-    name = sys.argv[2]
+    name = ''
+    for i in range(2,len(sys.argv)):
+        name += sys.argv[i] + ' '
 else:
-    print('Usage: python set2pylist.py <Spotify username> <artist in single quotes>')
+    print('Usage: python main.py <Spotify username> <artist in single quotes>')
     sys.exit()
+
+print name
 
 # API environmental variables - store in a class later
 SPOTIPY_CLIENT_ID='d3d2847c053c4f02bac26015bcff8ebd'
@@ -85,7 +89,7 @@ if token:
     sp = spotipy.Spotify(auth=token)
     sp.trace = False
     playlists = sp.user_playlist_create(username, playlist_name)
-    print 'Playlist created: ' + name + ' ' + playlist_name
+    print 'Playlist created: ' + playlist_name
 else:
     print 'Could not authenticate. Try again, ' + username
 
@@ -105,4 +109,4 @@ if token:
 else:
     print("Can't get token for", username)
 
-# IT'S SHIT BUT IT FUCKING WORKS AYYYYYYyy
+
