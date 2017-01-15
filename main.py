@@ -1,13 +1,18 @@
-# set2pylist v0.0.2
-# creates a Spotify playlist based on select artist's most recent setlist on setlist.fm
-# Kamil Krawczyk
+"""
+--- set2pylist v0.0.3 ---
+Usage: python main.py <Spotify username> <artist>
+Takes most recent setlist of your artist of choice and
+creates a Spotify playlist with the songs.
+
+Kamil Krawczyk, 2016
+Written with Python 2.7
+"""
 
 from bs4 import BeautifulSoup
 import spotipy
 import spotipy.util as util
 import requests
 import sys
-import pprint
 
 # maybe concatonate any entry index 2 and up to artist name?
 if len(sys.argv) >= 3:
@@ -18,8 +23,6 @@ if len(sys.argv) >= 3:
 else:
     print('Usage: python main.py <Spotify username> <artist in single quotes>')
     sys.exit()
-
-print name
 
 # API environmental variables - store in a class later
 SPOTIPY_CLIENT_ID='d3d2847c053c4f02bac26015bcff8ebd'
