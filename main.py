@@ -3,13 +3,13 @@
 # Kamil Krawczyk
 
 from bs4 import BeautifulSoup
-from set2pylist import UserAuthorizer, createSongList, createPlayList, addToPlaylist
 import spotipy
 import spotipy.util as util
 import requests
 import sys
+import pprint
 
-# take system arguments as our artist and user name
+# maybe concatonate any entry index 2 and up to artist name?
 if len(sys.argv) >= 3:
     username = sys.argv[1]
     name = ''
@@ -19,23 +19,27 @@ else:
     print('Usage: python main.py <Spotify username> <artist in single quotes>')
     sys.exit()
 
+print name
+
+# API environmental variables - store in a class later
+SPOTIPY_CLIENT_ID='d3d2847c053c4f02bac26015bcff8ebd'
+SPOTIPY_CLIENT_SECRET='0795f1b2f3934d599ea2d6c5ecf5d066'
+
+#TODO add input arguments via sys.argv
+
 # part one:
+# this part of the code scrapes the relevant data and saves it in an array of song titles
+
 # first thing is to download setlist data
 url = 'http://api.setlist.fm/rest/0.1/search/setlists?artistName=' + name
-
-# ensure connection successful
-try:
-    r = requests.get(url)
-except requests.exceptions.RequestException as e:
-    print("Error: " + e)
-    sys.exit()
+r = requests.get(url)
 
 # create BeautifulSoup object
 soup = BeautifulSoup(r.text, "lxml")
 
-# error breakpoint; terminate if no setlist found
+# error breakpoint; terminate if error received from setlist.fm
 if ('not found' in soup.get_text()):
-    print('Error: No setlist found. Please double check your artist name just in case and run again.')
+    print('Error: No setlist found. Please double check your artist name and try again.')
     sys.exit()
 
 # convert most recent setlist to an array w/ track names
@@ -43,34 +47,66 @@ recentSetlist = [i.get('name') for i in soup.find('setlist').find_all('song')]
 playlist_name = soup.find('setlist').get('eventdate')
 playlist_name += ' ' + name
 
+#TODO add break for artists that exist but have no setlist
+
+# this took goddamn forever to work, stupid callback URL
+# username = 'kamdev'
+scope = 'user-library-read playlist-modify-public'
+# name = 'Phish'
+
 # generate user token
-token = UserAuthorizer(username).authorizeToken()
+token = util.prompt_for_user_token(username, scope, client_id=SPOTIPY_CLIENT_ID, client_secret=SPOTIPY_CLIENT_SECRET, redirect_uri='http://localhost:8888/callback')
 
 # search spotify for trackid and save in list
 tracklist = []
 spotify = spotipy.Spotify()
-createSongList(tracklist, recentSetlist, token, name, username)
+
+if token:
+    for track in recentSetlist:
+        print 'Adding ' + track + ' by ' + name
+        query = spotify.search(q='artist:' + name + ' track:' + track, limit=1, type='track')
+        # response handling
+        if (query['tracks']['total'] == 0):
+            print track + ' could not be added.'
+        else:
+            tracklist.append(query['tracks']['items'][0]['id'])
+            print 'Added successfully.'
+else:
+    print 'Could not authenticate. Try again, ' + username
 
 # quit if no songs found
 if len(tracklist) == 0:
-    print('No tracks found on Spotify, please try a differnet artist.')
+    print ('No tracks found on Spotify, please try a differnet artist.')
     sys.exit()
+
+# fuuuuuuck me it's a dict with a list with a dict with a list
 
 # part two:
 # create playlist, find playlist id, and then add files to it
-createPlayList(username,playlist_name,token)
+
+# works!!!!!!!
+if token:
+    sp = spotipy.Spotify(auth=token)
+    sp.trace = False
+    playlists = sp.user_playlist_create(username, playlist_name)
+    print 'Playlist created: ' + playlist_name
+else:
+    print 'Could not authenticate. Try again, ' + username
 
 # find playlist ID
+# find users most recent playlist
 authTag = 'Bearer ' + token
-
-try:
-    req2 = requests.get('https://api.spotify.com/v1/users/' + username + '/playlists?limit=1', headers={'Authorization':authTag}).json()
-except requests.exceptions.RequestException as e:
-    print("Error: " + e)
-    sys.exit()
+req2 = requests.get('https://api.spotify.com/v1/users/' + username + '/playlists?limit=1', headers={'Authorization':authTag}).json()
 
 # parse JSON object for playlist id
 playlist_id = req2['items'][0]['id']
 
 # add to playlist
-addToPlaylist(username, playlist_id, tracklist, token)
+if token:
+    sp = spotipy.Spotify(auth=token)
+    sp.trace = False
+    results = sp.user_playlist_add_tracks(username, playlist_id, tracklist)
+else:
+    print("Can't get token for", username)
+
+
