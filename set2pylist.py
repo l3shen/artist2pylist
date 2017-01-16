@@ -46,20 +46,20 @@ class UserAuthorizer (object):
         else:
             print('Could not authenticate. Try again, ' + self.username)
 
-def createPlayList (username, playlist_name, token):
-    """
+    def createPlayList(self, playlist_name, token):
+        """
 
-        Creates public playlist in the user's account.
+            Creates public playlist in the user's account.
 
-    """
+        """
+        if token:
+            sp = spotipy.Spotify(auth=token)
+            sp.trace = False
+            playlists = sp.user_playlist_create(self.username, playlist_name)
+            print('Playlist created: ' + playlist_name)
+        else:
+            print('Could not authenticate. Try again, ' + self.username)
 
-    if token:
-        sp = spotipy.Spotify(auth=token)
-        sp.trace = False
-        playlists = sp.user_playlist_create(username, playlist_name)
-        print('Playlist created: ' + playlist_name)
-    else:
-        print('Could not authenticate. Try again, ' + username)
 
 def addToPlaylist (username, playlist_id, tracklist, token):
 

@@ -3,7 +3,6 @@
 # Kamil Krawczyk
 
 from bs4 import BeautifulSoup
-# from set2pylist import UserAuthorizer, createSongList, createPlayList, addToPlaylist
 import set2pylist as s2p
 import spotipy
 import requests
@@ -56,7 +55,7 @@ if len(tracklist) == 0:
     sys.exit()
 
 # create playlist
-s2p.createPlayList(username, playlist_name, token)
+userAuth.createPlayList(playlist_name, token)
 
 # find playlist ID
 # find users most recent playlist
