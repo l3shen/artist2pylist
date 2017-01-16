@@ -1,4 +1,4 @@
-# set2pylist classes and functions
+# set2pylist classes and functions for use in main
 # Kamil Krawczyk
 
 import spotipy.util as util

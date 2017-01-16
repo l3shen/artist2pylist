@@ -98,7 +98,7 @@ else:
 authTag = 'Bearer ' + token
 req2 = requests.get('https://api.spotify.com/v1/users/' + username + '/playlists?limit=1', headers={'Authorization':authTag}).json()
 
-# parse JSON object for playlist id
+# parse JSON object for playlist id or name
 playlist_id = req2['items'][0]['id']
 
 # add to playlist
