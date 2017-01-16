@@ -3,7 +3,8 @@
 # Kamil Krawczyk
 
 from bs4 import BeautifulSoup
-from set2pylist import UserAuthorizer, createSongList, createPlayList, addToPlaylist
+# from set2pylist import UserAuthorizer, createSongList, createPlayList, addToPlaylist
+import set2pylist as s2p
 import spotipy
 import requests
 import sys
@@ -40,13 +41,14 @@ playlist_name = soup.find('setlist').get('eventdate')
 playlist_name += ' ' + name
 
 # generate user token
-token = UserAuthorizer(username).authorizeToken()
+userAuth = s2p.UserAuthorizer(username)
+token = userAuth.authorizeToken()
 
 # search spotify for trackid and save in list
 tracklist = []
 spotify = spotipy.Spotify()
 
-createSongList(tracklist, recentSetlist, token, name, username)
+userAuth.createSongList(tracklist, recentSetlist, token, name)
 
 # quit if no songs found
 if len(tracklist) == 0:
@@ -54,7 +56,7 @@ if len(tracklist) == 0:
     sys.exit()
 
 # create playlist
-createPlayList(username, playlist_name, token)
+s2p.createPlayList(username, playlist_name, token)
 
 # find playlist ID
 # find users most recent playlist
@@ -70,6 +72,6 @@ except requests.exceptions.RequestException as error:
 playlist_id = req2['items'][0]['id']
 
 # add to playlist
-addToPlaylist(username, playlist_id, tracklist, token)
+s2p.addToPlaylist(username, playlist_id, tracklist, token)
 
 

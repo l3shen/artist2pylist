@@ -26,26 +26,25 @@ class UserAuthorizer (object):
     def authorizeToken(self):
          return util.prompt_for_user_token(self.username, self.scope, client_id=self.SPOTIPY_CLIENT_ID, client_secret=self.SPOTIPY_CLIENT_SECRET, redirect_uri=self.REDIRECT_URL)
 
-def createSongList (tracklist, setlist, token, artist, username):
+    def createSongList (self, tracklist, setlist, token, artist):
+        """
 
-    """
+            Used to create the playlist for the user using the token provided,
 
-        Used to create the playlist for the user using the token provided,
+        """
 
-    """
-
-    if token:
-        for track in setlist:
-            print('Adding ' + track + ' by ' + artist)
-            query = spotipy.Spotify().search(q='artist:' + artist + ' track:' + track, limit=1, type='track')
-            # response handling
-            if (query['tracks']['total'] == 0):
-                print(track + ' could not be added.')
-            else:
-                tracklist.append(query['tracks']['items'][0]['id'])
-                print('Added successfully.')
-    else:
-        print('Could not authenticate. Try again, ' + username)
+        if token:
+            for track in setlist:
+                print('Adding ' + track + ' by ' + artist)
+                query = spotipy.Spotify().search(q='artist:' + artist + ' track:' + track, limit=1, type='track')
+                # response handling
+                if (query['tracks']['total'] == 0):
+                    print(track + ' could not be added.')
+                else:
+                    tracklist.append(query['tracks']['items'][0]['id'])
+                    print('Added successfully.')
+        else:
+            print('Could not authenticate. Try again, ' + self.username)
 
 def createPlayList (username, playlist_name, token):
     """
