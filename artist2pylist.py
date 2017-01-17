@@ -4,7 +4,7 @@
 import spotipy.util as util
 import spotipy
 
-class UserAuthorizer (object):
+class SpotifyUser (object):
 
     """
 
@@ -60,18 +60,17 @@ class UserAuthorizer (object):
         else:
             print('Could not authenticate. Try again, ' + self.username)
 
+    def addToPlaylist(self, playlist_id, tracklist, token):
 
-def addToPlaylist (username, playlist_id, tracklist, token):
+        """
 
-    """
+            Add tracks to user's most recently made playlist.
 
-        Add tracks to user's most recently made playlist.
+        """
 
-    """
-
-    if token:
-        sp = spotipy.Spotify(auth=token)
-        sp.trace = False
-        results = sp.user_playlist_add_tracks(username, playlist_id, tracklist)
-    else:
-        print("Can't get token for", username)
+        if token:
+            sp = spotipy.Spotify(auth=token)
+            sp.trace = False
+            results = sp.user_playlist_add_tracks(self.username, playlist_id, tracklist)
+        else:
+            print("Can't get token for", self.username)
