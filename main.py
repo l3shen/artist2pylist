@@ -3,7 +3,7 @@
 # Kamil Krawczyk
 
 from bs4 import BeautifulSoup
-import set2pylist as s2p
+import artist2pylist as a2p
 import spotipy
 import requests
 import sys
@@ -40,7 +40,7 @@ playlist_name = soup.find('setlist').get('eventdate')
 playlist_name += ' ' + name
 
 # generate user token
-userAuth = s2p.UserAuthorizer(username)
+userAuth = a2p.UserAuthorizer(username)
 token = userAuth.authorizeToken()
 
 # search spotify for trackid and save in list
@@ -71,6 +71,6 @@ except requests.exceptions.RequestException as error:
 playlist_id = req2['items'][0]['id']
 
 # add to playlist
-s2p.addToPlaylist(username, playlist_id, tracklist, token)
+a2p.addToPlaylist(username, playlist_id, tracklist, token)
 
 
